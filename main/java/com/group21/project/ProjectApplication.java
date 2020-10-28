@@ -1,13 +1,13 @@
-package com.group21.blogsite;
+package com.group21.project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BlogsiteApplication {
+public class ProjectApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BlogsiteApplication.class, args);
+		SpringApplication.run(ProjectApplication.class, args);
 	}
 
 }

@@ -1,6 +1,7 @@
-package com.group21.blogsite.dao;
+package com.group21.project.dao;
 
-import com.group21.blogsite.model.Comment;
+
+import com.group21.project.model.Comment;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,5 +10,5 @@ public interface CommentDAO {
     List<Comment> getComments(UUID blogID) ;
     void addComment(UUID blogID,Comment comment) ;
     void deleteComment(UUID blogID,UUID commentID) ;
-    void editComment(UUID blogID,UUID commentID,Comment comment) ;
+    void editComment(Comment comment) ;
 }

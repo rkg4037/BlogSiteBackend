@@ -1,11 +1,10 @@
-package com.group21.blogsite.dao;
+package com.group21.project.dao;
 
-import com.group21.blogsite.model.User;
-
-import java.util.List;
-import java.util.UUID;
+import com.group21.project.model.User;
 
 public interface UserDAO {
     void registerUser(User user) ;
     boolean validateUser(String username,String password) ;
 }
+
+
