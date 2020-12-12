@@ -1,0 +1,73 @@
+{
+    "AttributeDefinitions": [
+    {
+        "AttributeName": "PK", 
+        "AttributeType": "S"
+    }, 
+    {
+        "AttributeName": "SK", 
+        "AttributeType": "S"
+    },
+    {
+        "AttributeName": "emailID", 
+        "AttributeType": "S"
+    },
+    {
+        "AttributeName": "category", 
+        "AttributeType": "S"
+    }
+    ], 
+        "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "EmailIndex", 
+            "Projection": {
+                "ProjectionType": "ALL"
+            }, 
+            "ProvisionedThroughput": {
+                "WriteCapacityUnits": 5, 
+                "ReadCapacityUnits": 5
+            }, 
+            "KeySchema": [
+            {
+                "KeyType": "HASH", 
+                "AttributeName": "emailID"
+            }
+            ]
+        },
+        {
+            "IndexName": "CategoryIndex", 
+            "Projection": {
+                "ProjectionType": "ALL"
+            }, 
+            "ProvisionedThroughput": {
+                "WriteCapacityUnits": 5, 
+                "ReadCapacityUnits": 5
+            }, 
+            "KeySchema": [
+            {
+                "KeyType": "HASH", 
+                "AttributeName": "category"
+            },
+            {
+                "KeyType": "RANGE", 
+                "AttributeName": "PK"
+            }
+            ]
+        }
+    ], 
+        "ProvisionedThroughput": {
+            "WriteCapacityUnits": 5, 
+            "ReadCapacityUnits": 5
+        }, 
+        "TableName": "website", 
+        "KeySchema": [
+        {
+            "KeyType": "HASH", 
+            "AttributeName": "PK"
+        },
+        {
+            "KeyType": "RANGE", 
+            "AttributeName": "SK"
+        }
+    ]
+}
