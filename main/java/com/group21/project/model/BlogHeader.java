@@ -9,15 +9,19 @@ public class BlogHeader {
     private long creationTime ;
     private long lastUpdatedTime ;
     private long hits ;
+    private long likes ;
+    private long dislikes ;
     private String heading ;
     private String category ;
 
-    public BlogHeader(@JsonProperty("blogID") UUID blogID, @JsonProperty("username") String username, @JsonProperty("creationTime") long creationTime, @JsonProperty("lastUpdatedTime") long lastUpdatedTime, @JsonProperty("hits") long hits, @JsonProperty("heading") String heading, @JsonProperty("category") String category) {
+    public BlogHeader(@JsonProperty("blogID") UUID blogID, @JsonProperty("username") String username, @JsonProperty("creationTime") long creationTime, @JsonProperty("lastUpdatedTime") long lastUpdatedTime, @JsonProperty("hits") long hits, @JsonProperty("likes") long likes, @JsonProperty("dislikes") long dislikes, @JsonProperty("heading") String heading, @JsonProperty("category") String category) {
         this.blogID = blogID;
         this.username = username;
         this.creationTime = creationTime;
         this.lastUpdatedTime = lastUpdatedTime;
         this.hits = hits ;
+        this.likes=likes ;
+        this.dislikes=dislikes ;
         this.heading = heading;
         this.category = category;
     }
@@ -76,5 +80,21 @@ public class BlogHeader {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(long likes) {
+        this.likes = likes;
+    }
+
+    public long getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(long dislikes) {
+        this.dislikes = dislikes;
     }
 }

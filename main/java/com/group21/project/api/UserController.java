@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("user")
 @RestController
 public class UserController {
@@ -19,7 +22,7 @@ public class UserController {
 
     @PostMapping
     public void registerUser(@RequestBody User user){
-        //System.out.println(user.getEmailID()) ;
+        System.out.println(user.getUsername()) ;
         userService.registerUser(user);
         return ;
     }
@@ -27,5 +30,10 @@ public class UserController {
     @GetMapping
     public boolean validateUser(@RequestParam String username, @RequestParam String password){
         return userService.validateUser(username,password) ;
+    }
+
+    @GetMapping(path="/all")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers() ;
     }
 }

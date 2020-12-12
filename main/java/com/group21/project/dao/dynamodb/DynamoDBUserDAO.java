@@ -2,6 +2,7 @@ package com.group21.project.dao.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.group21.project.dao.UserDAO;
 import com.group21.project.dao.dynamodb.item.UserItem;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -63,5 +65,30 @@ public class DynamoDBUserDAO implements UserDAO {
         if(userItem.getPassword().equals(password))
             return true ;
         return false ;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        HashMap<String, AttributeValue> eav = new HashMap<>();
+        eav.put(":v1",new AttributeValue().withS("User#")) ;
+
+        List<User> users = new ArrayList<>() ;
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("begins_with(PK,:v1) and begins_with(SK,:v1)")
+                .withExpressionAttributeValues(eav);
+
+        //DynamoDBQueryExpression<UserItem> queryExpression ;
+        //queryExpression = new DynamoDBQueryExpression<UserItem>() ;
+                //.withKeyConditionExpression("begins_with(PK,:v1) and begins_with(SK,:v1)")
+                //.withExpressionAttributeValues(eav);
+
+        List<UserItem> userItems = mapper.scan(UserItem.class,scanExpression) ;
+
+        for(UserItem userItem : userItems){
+            users.add(userItemMapper.to(userItem)) ;
+            System.out.print(userItem.getPK()) ;
+        }
+
+        return users ;
     }
 }

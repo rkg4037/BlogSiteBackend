@@ -12,5 +12,7 @@ public interface BlogDAO {
     void addBlog(Blog blog) ;
     void deleteBlog(String username,UUID blogID) ;
     void editBlog(Blog blog) ;
+    void likeBlog(UUID blogID,int inc) ;
+    void dislikeBlog(UUID blogID,int inc) ;
     Blog getBlog(UUID blogID) ;
 }

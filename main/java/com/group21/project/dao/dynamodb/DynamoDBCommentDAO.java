@@ -8,6 +8,7 @@ import com.group21.project.dao.CommentDAO;
 import com.group21.project.dao.dynamodb.item.BlogCommentMapping;
 import com.group21.project.dao.dynamodb.item.CommentItem;
 import com.group21.project.dao.dynamodb.mapper.CommentItemMapper;
+import com.group21.project.model.BlogHeader;
 import com.group21.project.model.Comment;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class DynamoDBCommentDAO implements CommentDAO {
     public List<Comment> getComments(UUID blogID) {
 
         String hashKey = "Blog#"+blogID ;
+        List<Comment> comments = new ArrayList<>() ;
 
         /*
             Hashmap created to get all entries with PK value as ("Blog#" + blogID) and
@@ -49,6 +51,8 @@ public class DynamoDBCommentDAO implements CommentDAO {
                 .withKeyConditionExpression(" PK=:v1 and begins_with(SK,:v2)")
                 .withExpressionAttributeValues(eav);
         List<BlogCommentMapping> blogCommentMappingList = mapper.query(BlogCommentMapping.class,queryExpression) ;
+        if(blogCommentMappingList.size()==0)
+            return comments ;
 
         /*
             List of KeyPairs made in which keypair, hash as well as range key corresponds to commentID to find Comment object.
@@ -78,10 +82,18 @@ public class DynamoDBCommentDAO implements CommentDAO {
         /*
         converting commentItem to comment
          */
-        List<Comment> comments = new ArrayList<>() ;
+
         for(CommentItem commentItem: commentItems){
             comments.add(commentItemMapper.to(commentItem)) ;
         }
+
+        Collections.sort(comments,new Comparator<Comment>(){
+
+            @Override
+            public int compare(Comment o1, Comment o2) {
+                return Long.compare(o1.getCreationTime(),o2.getCreationTime()) ;
+            }
+        });
 
         return comments ;
     }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserDAO userDAO;
@@ -25,5 +27,9 @@ public class UserService {
 
     public boolean validateUser(@RequestParam String username, @RequestParam String password){
         return userDAO.validateUser(username,password) ;
+    }
+
+    public List<User> getAllUsers(){
+        return userDAO.getAllUsers() ;
     }
 }

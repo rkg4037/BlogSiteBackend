@@ -40,6 +40,12 @@ public class BlogService {
         blogDAO.deleteBlog(username, blogID);
     }
 
+    public void likeBlog(UUID blogID,int inc){ blogDAO.likeBlog(blogID,inc);}
+
+    public void dislikeBlog(UUID blogID,int inc){
+        blogDAO.dislikeBlog(blogID,inc);
+    }
+
     public Blog getBlog(UUID blogID){
         return blogDAO.getBlog(blogID) ;
     }

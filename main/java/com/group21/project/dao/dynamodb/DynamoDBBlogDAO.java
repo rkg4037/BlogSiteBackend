@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.group21.project.Helpers;
 import com.group21.project.dao.BlogDAO;
 import com.group21.project.dao.dynamodb.item.BlogItem;
 import com.group21.project.dao.dynamodb.item.UserBlogMapping;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+
 
 @Repository("dynamo-db-blog")
 public class DynamoDBBlogDAO implements BlogDAO {
@@ -79,26 +81,24 @@ public class DynamoDBBlogDAO implements BlogDAO {
             blogHeaders.add(blogItem.getBlogHeader()) ;
         }
 
+        Collections.sort(blogHeaders,new Comparator<BlogHeader>(){
+
+            @Override
+            public int compare(BlogHeader o1, BlogHeader o2) {
+                return Long.compare(o1.getCreationTime(),o2.getCreationTime()) ;
+            }
+        });
+
+        Collections.reverse(blogHeaders);
+
         return blogHeaders ;
     }
 
     @Override
     public List<BlogHeader> recommendedBlogs(String category) {
 
-        HashMap<String, AttributeValue> eav = new HashMap<>() ;
-        eav.put(":v1",new AttributeValue().withS("Blog#")) ;
-
-        DynamoDBQueryExpression<BlogItem> queryExpression = new DynamoDBQueryExpression<BlogItem>()
-                .withKeyConditionExpression("begins_with(PK,:v1) and begins_with(SK,:v1)")
-                .withExpressionAttributeValues(eav) ;
-        List<BlogItem> blogItems = mapper.query(BlogItem.class,queryExpression) ;
-        List<BlogHeader> blogHeaders = new ArrayList<>() ;
-
-        for(BlogItem item : blogItems){
-            blogHeaders.add(item.getBlogHeader()) ;
-        }
         // category wise
-        /*HashMap<String,AttributeValue> eav = new HashMap<>() ;
+        HashMap<String,AttributeValue> eav = new HashMap<>() ;
         eav.put(":v1",new AttributeValue().withS(category)) ;
 
         DynamoDBQueryExpression<BlogItem> queryExpression = new DynamoDBQueryExpression<BlogItem>()
@@ -111,7 +111,16 @@ public class DynamoDBBlogDAO implements BlogDAO {
         List<BlogHeader> blogHeaders = new ArrayList<>() ;
         for(BlogItem item : blogItems){
             blogHeaders.add(item.getBlogHeader()) ;
-        }*/
+        }
+        Collections.sort(blogHeaders,new Comparator<BlogHeader>(){
+
+            @Override
+            public int compare(BlogHeader o1, BlogHeader o2) {
+                return Float.compare(Helpers.getLikeDislikeRatio(o1),Helpers.getLikeDislikeRatio(o2)) ;
+            }
+        });
+
+        Collections.reverse(blogHeaders);
         return blogHeaders;
     }
 
@@ -144,10 +153,33 @@ public class DynamoDBBlogDAO implements BlogDAO {
         mapper.delete(blogItem);
     }
 
+
     @Override
     public void editBlog(Blog blog) {
         BlogItem blogItem = blogItemMapper.from(blog) ;
         mapper.save(blogItem) ;
+        return ;
+    }
+
+    @Override
+    public void likeBlog(UUID blogID,int inc) {
+        String key = "Blog#"+blogID ;
+        BlogItem blogItem = mapper.load(BlogItem.class,key,key) ;
+        BlogHeader blogHeader = blogItem.getBlogHeader() ;
+        blogHeader.setLikes(blogHeader.getLikes()+inc);
+        blogItem.setBlogHeader(blogHeader);
+        mapper.save(blogItem);
+        return ;
+    }
+
+    @Override
+    public void dislikeBlog(UUID blogID,int inc) {
+        String key = "Blog#"+blogID ;
+        BlogItem blogItem = mapper.load(BlogItem.class,key,key) ;
+        BlogHeader blogHeader = blogItem.getBlogHeader() ;
+        blogHeader.setDislikes(blogHeader.getDislikes()+inc);
+        blogItem.setBlogHeader(blogHeader);
+        mapper.save(blogItem);
         return ;
     }
 
@@ -157,7 +189,8 @@ public class DynamoDBBlogDAO implements BlogDAO {
         BlogItem blogItem = mapper.load(BlogItem.class,key,key) ;
         Blog blog = blogItemMapper.to(blogItem) ;
         BlogHeader blogHeader = blogItem.getBlogHeader() ;
-        blogHeader.setHits(blogHeader.getHits()+1);
+        long hits = blogHeader.getHits()+1 ;
+        blogHeader.setHits(hits);
         blogItem.setBlogHeader(blogHeader);
         mapper.save(blogItem);
         return blog ;
